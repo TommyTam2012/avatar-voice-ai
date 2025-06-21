@@ -25,14 +25,15 @@ export default async function handler(req, res) {
         "xi-api-key": elevenlabsApiKey,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        text,
-        model_id: "eleven_monolingual_v1",
-        voice_settings: {
-          stability: 0.4,
-          similarity_boost: 0.75
-        }
-      })
+      bbody: JSON.stringify({
+  text,
+  model_id: "eleven_monolingual_v1",
+  voice_settings: {
+    stability: 0.4,
+    similarity_boost: 0.75
+  },
+  style: "slow"  // 🐢 Tell ElevenLabs to slow down
+})
     });
 
     if (!response.ok) {
