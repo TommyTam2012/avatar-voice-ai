@@ -1,7 +1,6 @@
 const canvas = document.getElementById("avatarCanvas");
 const ctx = canvas.getContext("2d");
 
-// Draw face
 function drawFace(mouthOpen) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -31,7 +30,6 @@ function drawFace(mouthOpen) {
 
 drawFace(false);
 
-// Speak function
 async function speak() {
   const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson.";
 
@@ -43,7 +41,7 @@ async function speak() {
     });
 
     if (!response.ok) {
-      alert("❌ Voice failed.");
+      alert("❌ Voice fetch failed.");
       return;
     }
 
@@ -51,41 +49,28 @@ async function speak() {
     const audioURL = URL.createObjectURL(blob);
     const audio = new Audio(audioURL);
     audio.crossOrigin = "anonymous";
-
     audio.playbackRate = 0.85;
 
-    const audioContext = new AudioContext();
-    const source = audioContext.createMediaElementSource(audio);
-    const analyser = audioContext.createAnalyser();
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
+    let mouthState = false;
+    let intervalId = null;
 
-    analyser.fftSize = 32;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    // Simulated mouth movement every 500ms
+    function startMouthLoop() {
+      intervalId = setInterval(() => {
+        mouthState = !mouthState;
+        drawFace(mouthState);
+      }, 500);
+    }
 
-    let isPlaying = true;
+    function stopMouthLoop() {
+      clearInterval(intervalId);
+      drawFace(false); // Neutral mouth
+    }
 
-    // Animate AFTER audio is actually playing
-    audio.addEventListener("play", () => {
-      function animate() {
-        if (!isPlaying) return;
-        requestAnimationFrame(animate);
-        analyser.getByteFrequencyData(dataArray);
-        const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-        drawFace(volume > 20);
-      }
-      animate();
-    });
+    audio.addEventListener("play", () => startMouthLoop());
+    audio.addEventListener("ended", () => stopMouthLoop());
 
     await audio.play();
-
-    // Close mouth on end
-    audio.onended = () => {
-      isPlaying = false;
-      drawFace(false);
-      audioContext.close();
-    };
   } catch (err) {
     console.error("💥 Error:", err);
     drawFace(false);
