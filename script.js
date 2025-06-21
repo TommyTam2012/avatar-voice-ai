@@ -39,15 +39,6 @@ function drawFace(mouthOpen) {
   ctx.fillStyle = "#900";
   ctx.fill();
 
-    // Suit collar
-  ctx.fillStyle = "#222";
-  ctx.beginPath();
-  ctx.moveTo(85, 250);          // left bottom corner
-  ctx.lineTo(150, 180);         // top center V
-  ctx.lineTo(215, 250);         // right bottom corner
-  ctx.closePath();
-  ctx.fill();
-
   // Red pocket square (shift it up and left)
   ctx.fillStyle = "red";
   ctx.beginPath();
