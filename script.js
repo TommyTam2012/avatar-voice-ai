@@ -39,22 +39,22 @@ function drawFace(mouthOpen) {
   ctx.fillStyle = "#900";
   ctx.fill();
 
-  // Suit collar
+    // Suit collar
   ctx.fillStyle = "#222";
   ctx.beginPath();
-  ctx.moveTo(85, 250);
-  ctx.lineTo(150, 190);
-  ctx.lineTo(215, 250);
+  ctx.moveTo(85, 250);          // left bottom corner
+  ctx.lineTo(150, 180);         // top center V
+  ctx.lineTo(215, 250);         // right bottom corner
   ctx.closePath();
   ctx.fill();
 
-  // Red pocket square
+  // Red pocket square (shift it up and left)
   ctx.fillStyle = "red";
   ctx.beginPath();
-  ctx.moveTo(185, 230);
-  ctx.lineTo(195, 230);
-  ctx.lineTo(195, 240);
-  ctx.lineTo(185, 240);
+  ctx.moveTo(172, 220);         // top left
+  ctx.lineTo(180, 220);         // top right
+  ctx.lineTo(180, 228);         // bottom right
+  ctx.lineTo(172, 228);         // bottom left
   ctx.closePath();
   ctx.fill();
 }
