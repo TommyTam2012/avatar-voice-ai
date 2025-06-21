@@ -54,17 +54,22 @@ async function speak() {
     let mouthState = false;
     let intervalId = null;
 
-    // Simulated mouth movement every 500ms
+    // 🎯 New: Simulate random human-like mouth motion
     function startMouthLoop() {
-      intervalId = setInterval(() => {
+      function randomMouthMotion() {
         mouthState = !mouthState;
         drawFace(mouthState);
-      }, 500);
+
+        const nextDelay = Math.random() * 400 + 250; // 250ms to 650ms
+        intervalId = setTimeout(randomMouthMotion, nextDelay);
+      }
+
+      randomMouthMotion();
     }
 
     function stopMouthLoop() {
-      clearInterval(intervalId);
-      drawFace(false); // Neutral mouth
+      clearTimeout(intervalId);
+      drawFace(false);
     }
 
     audio.addEventListener("play", () => startMouthLoop());
