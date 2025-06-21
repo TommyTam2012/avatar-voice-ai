@@ -2,7 +2,7 @@ let audioContext, analyser, dataArray;
 const canvas = document.getElementById("avatarCanvas");
 const ctx = canvas.getContext("2d");
 
-// Initial face drawing
+// Draws the face with mouth animation
 function drawFace(mouthOpen) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -19,7 +19,7 @@ function drawFace(mouthOpen) {
   ctx.arc(180, 130, 10, 0, Math.PI * 2); // Right eye
   ctx.fill();
 
-  // Mouth (animated open/closed)
+  // Mouth
   ctx.beginPath();
   if (mouthOpen) {
     ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
@@ -30,34 +30,54 @@ function drawFace(mouthOpen) {
   ctx.fill();
 }
 
-drawFace(false); // Draw neutral face at start
+drawFace(false); // Draw initial neutral face
 
-// Play voice and animate mouth
+// Main function triggered by button
 async function speak() {
-  const audio = new Audio("public/myvoice.mp3"); // Your ElevenLabs voice
-  audio.crossOrigin = "anonymous";
+  const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson."; // You can replace with GPT later
 
-  if (!audioContext) {
-    audioContext = new AudioContext();
-    const source = audioContext.createMediaElementSource(audio);
-    analyser = audioContext.createAnalyser();
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
+  try {
+    const response = await fetch("/api/speak", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
 
-    analyser.fftSize = 32;
-    const bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
+    if (!response.ok) {
+      alert("❌ Failed to get voice from ElevenLabs");
+      return;
+    }
+
+    const blob = await response.blob();
+    const audioURL = URL.createObjectURL(blob);
+    const audio = new Audio(audioURL);
+
+    audio.crossOrigin = "anonymous";
+
+    // Setup audio context and analyzer
+    if (!audioContext) {
+      audioContext = new AudioContext();
+      const source = audioContext.createMediaElementSource(audio);
+      analyser = audioContext.createAnalyser();
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+
+      analyser.fftSize = 32;
+      const bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+    }
+
+    audio.play();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      analyser.getByteFrequencyData(dataArray);
+      const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+      drawFace(volume > 20); // Simulate mouth movement based on volume
+    }
+
+    animate();
+  } catch (err) {
+    console.error("Error during speech:", err);
   }
-
-  audio.play();
-
-  function animate() {
-    requestAnimationFrame(animate);
-    analyser.getByteFrequencyData(dataArray);
-    const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-
-    drawFace(volume > 20); // Volume threshold = mouth open
-  }
-
-  animate();
 }
