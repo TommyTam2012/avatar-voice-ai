@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     }
 
     const elevenlabsApiKey = process.env.ELEVENLABS_API_KEY;
-    const voiceId = "EXAVITQu4vr4xnSDxMaL"; // You can replace this with your cloned voice ID
+    const voiceId = "E2iXioKRyjSqJA8tUYsv"; // Your custom voice
 
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         text,
-        model_id: "eleven_monolingual_v1", // or eleven_multilingual_v2
+        model_id: "eleven_monolingual_v1",
         voice_settings: {
           stability: 0.4,
           similarity_boost: 0.75
@@ -31,6 +31,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const error = await response.text();
+      console.error("💥 ElevenLabs API Error:", error);
       return res.status(500).json({ error });
     }
 
@@ -40,6 +41,7 @@ export default async function handler(req, res) {
     res.setHeader("Content-Disposition", "inline; filename=voice.mp3");
     res.status(200).send(Buffer.from(audioBuffer));
   } catch (error) {
-    res.status(500).json({ error: "Failed to synthesize speech" });
+    console.error("💥 API Failure:", error);
+    res.status(500).json({ error: "Server error: " + error.message });
   }
 }
