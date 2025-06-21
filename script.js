@@ -51,8 +51,10 @@ async function speak() {
     const blob = await response.blob();
     const audioURL = URL.createObjectURL(blob);
     const audio = new Audio(audioURL);
+audio.crossOrigin = "anonymous";
 
-    audio.crossOrigin = "anonymous";
+// 🔉 Slow down the speaking rate
+audio.playbackRate = 0.85;  // Default = 1.0, try 0.85 for ~15% slower
 
     // Setup audio context and analyzer
     if (!audioContext) {
