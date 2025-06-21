@@ -1,8 +1,7 @@
-let audioContext, analyser, dataArray;
 const canvas = document.getElementById("avatarCanvas");
 const ctx = canvas.getContext("2d");
 
-// Draw the avatar's face
+// Draw face
 function drawFace(mouthOpen) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -19,7 +18,7 @@ function drawFace(mouthOpen) {
   ctx.arc(180, 130, 10, 0, Math.PI * 2);
   ctx.fill();
 
-  // Mouth (animated)
+  // Mouth
   ctx.beginPath();
   if (mouthOpen) {
     ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
@@ -30,10 +29,9 @@ function drawFace(mouthOpen) {
   ctx.fill();
 }
 
-// Initial face
 drawFace(false);
 
-// Speak button trigger
+// Main speak logic
 async function speak() {
   const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson.";
 
@@ -45,7 +43,7 @@ async function speak() {
     });
 
     if (!response.ok) {
-      alert("❌ Failed to get voice from ElevenLabs");
+      alert("❌ Voice failed.");
       return;
     }
 
@@ -53,43 +51,36 @@ async function speak() {
     const audioURL = URL.createObjectURL(blob);
     const audio = new Audio(audioURL);
     audio.crossOrigin = "anonymous";
-    audio.playbackRate = 0.85; // 🐢 Slower playback
 
-    // Setup analyzer
-    if (!audioContext) {
-      audioContext = new AudioContext();
-      const source = audioContext.createMediaElementSource(audio);
-      analyser = audioContext.createAnalyser();
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaElementSource(audio);
+    const analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
 
-      analyser.fftSize = 32;
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
-    }
+    analyser.fftSize = 32;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-    // 🎬 Animate mouth
     let isPlaying = true;
 
     function animate() {
       if (!isPlaying) return;
-
       requestAnimationFrame(animate);
       analyser.getByteFrequencyData(dataArray);
       const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-
-      drawFace(volume > 20); // Mouth open when volume is high
+      drawFace(volume > 20);
     }
 
     audio.play();
     animate();
 
-    // 🛑 Close mouth when audio ends
     audio.onended = () => {
       isPlaying = false;
       drawFace(false);
+      audioContext.close(); // Clean shutdown
     };
   } catch (err) {
-    console.error("💥 Error during speech:", err);
+    console.error("💥 Error:", err);
   }
 }
