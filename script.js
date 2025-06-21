@@ -24,4 +24,40 @@ function drawFace(mouthOpen) {
   if (mouthOpen) {
     ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
   } else {
-    ctx.ellipse(150, 190, 30, 5, 0, 0, Ma
+    ctx.ellipse(150, 190, 30, 5, 0, 0, Math.PI * 2);
+  }
+  ctx.fillStyle = "#900";
+  ctx.fill();
+}
+
+drawFace(false); // Draw face initially
+
+// Play voice and animate mouth
+async function speak() {
+  const audio = new Audio("sample.mp3"); // Replace this later with ElevenLabs MP3
+  audio.crossOrigin = "anonymous";
+
+  if (!audioContext) {
+    audioContext = new AudioContext();
+    const source = audioContext.createMediaElementSource(audio);
+    analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    analyser.fftSize = 32;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+  }
+
+  audio.play();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    analyser.getByteFrequencyData(dataArray);
+    const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+
+    drawFace(volume > 20); // Simple threshold for mouth animation
+  }
+
+  animate();
+}
