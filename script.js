@@ -4,27 +4,58 @@ const ctx = canvas.getContext("2d");
 function drawFace(mouthOpen) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Head
+  // Head shape (oval face)
   ctx.beginPath();
-  ctx.arc(150, 150, 100, 0, Math.PI * 2);
+  ctx.ellipse(150, 150, 85, 100, 0, 0, Math.PI * 2);
   ctx.fillStyle = "#f9d1a1";
+  ctx.fill();
+
+  // Hair (silver arc on top)
+  ctx.beginPath();
+  ctx.arc(150, 120, 85, Math.PI, 2 * Math.PI);
+  ctx.fillStyle = "#c0c0c0";
+  ctx.fill();
+
+  // Left ear earring
+  ctx.beginPath();
+  ctx.arc(65, 155, 4, 0, Math.PI * 2);
+  ctx.fillStyle = "gold";
   ctx.fill();
 
   // Eyes
   ctx.fillStyle = "#000";
   ctx.beginPath();
-  ctx.arc(120, 130, 10, 0, Math.PI * 2);
-  ctx.arc(180, 130, 10, 0, Math.PI * 2);
+  ctx.arc(120, 140, 9, 0, Math.PI * 2); // Left eye
+  ctx.arc(180, 140, 9, 0, Math.PI * 2); // Right eye
   ctx.fill();
 
   // Mouth
   ctx.beginPath();
   if (mouthOpen) {
-    ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
+    ctx.ellipse(150, 200, 30, 20, 0, 0, Math.PI * 2);
   } else {
-    ctx.ellipse(150, 190, 30, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(150, 200, 30, 5, 0, 0, Math.PI * 2);
   }
   ctx.fillStyle = "#900";
+  ctx.fill();
+
+  // Suit collar
+  ctx.fillStyle = "#222";
+  ctx.beginPath();
+  ctx.moveTo(85, 250);
+  ctx.lineTo(150, 190);
+  ctx.lineTo(215, 250);
+  ctx.closePath();
+  ctx.fill();
+
+  // Red pocket square
+  ctx.fillStyle = "red";
+  ctx.beginPath();
+  ctx.moveTo(185, 230);
+  ctx.lineTo(195, 230);
+  ctx.lineTo(195, 240);
+  ctx.lineTo(185, 240);
+  ctx.closePath();
   ctx.fill();
 }
 
@@ -54,16 +85,14 @@ async function speak() {
     let mouthState = false;
     let intervalId = null;
 
-    // 🎯 New: Simulate random human-like mouth motion
+    // 🎯 Human-style mouth movement: randomized open/close
     function startMouthLoop() {
       function randomMouthMotion() {
         mouthState = !mouthState;
         drawFace(mouthState);
-
-        const nextDelay = Math.random() * 400 + 250; // 250ms to 650ms
+        const nextDelay = Math.random() * 400 + 250; // 250–650ms
         intervalId = setTimeout(randomMouthMotion, nextDelay);
       }
-
       randomMouthMotion();
     }
 
