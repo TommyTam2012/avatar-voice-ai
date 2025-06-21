@@ -19,7 +19,7 @@ function drawFace(mouthOpen) {
   ctx.arc(180, 130, 10, 0, Math.PI * 2); // Right eye
   ctx.fill();
 
-  // Mouth (changes if mouthOpen)
+  // Mouth (animated open/closed)
   ctx.beginPath();
   if (mouthOpen) {
     ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
@@ -30,11 +30,11 @@ function drawFace(mouthOpen) {
   ctx.fill();
 }
 
-drawFace(false); // Draw face initially
+drawFace(false); // Draw neutral face at start
 
 // Play voice and animate mouth
 async function speak() {
-  const audio = new Audio("sample.mp3"); // Replace this later with ElevenLabs MP3
+  const audio = new Audio("public/myvoice.mp3"); // Your ElevenLabs voice
   audio.crossOrigin = "anonymous";
 
   if (!audioContext) {
@@ -56,7 +56,7 @@ async function speak() {
     analyser.getByteFrequencyData(dataArray);
     const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
 
-    drawFace(volume > 20); // Simple threshold for mouth animation
+    drawFace(volume > 20); // Volume threshold = mouth open
   }
 
   animate();
