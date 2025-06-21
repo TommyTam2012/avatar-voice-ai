@@ -53,7 +53,7 @@ function drawFace(mouthOpen) {
 drawFace(false);
 
 async function speak() {
-  const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson.";
+  const text = "大家好，我是Tommy老師。這是我第一次用我的克隆聲音製作的2D教學影片,希望未來我能開發出3D模型，或使用我的照片來進行即時授課.";
 
   try {
     const response = await fetch("/api/speak", {
