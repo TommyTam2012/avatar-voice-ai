@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         "xi-api-key": elevenlabsApiKey,
         "Content-Type": "application/json"
       },
-      bbody: JSON.stringify({
+      body: JSON.stringify({
   text,
   model_id: "eleven_monolingual_v1",
   voice_settings: {
