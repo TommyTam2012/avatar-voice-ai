@@ -2,7 +2,7 @@ let audioContext, analyser, dataArray;
 const canvas = document.getElementById("avatarCanvas");
 const ctx = canvas.getContext("2d");
 
-// Draws the face with mouth animation
+// Draw the avatar's face
 function drawFace(mouthOpen) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -15,11 +15,11 @@ function drawFace(mouthOpen) {
   // Eyes
   ctx.fillStyle = "#000";
   ctx.beginPath();
-  ctx.arc(120, 130, 10, 0, Math.PI * 2); // Left eye
-  ctx.arc(180, 130, 10, 0, Math.PI * 2); // Right eye
+  ctx.arc(120, 130, 10, 0, Math.PI * 2);
+  ctx.arc(180, 130, 10, 0, Math.PI * 2);
   ctx.fill();
 
-  // Mouth
+  // Mouth (animated)
   ctx.beginPath();
   if (mouthOpen) {
     ctx.ellipse(150, 190, 30, 20, 0, 0, Math.PI * 2);
@@ -30,11 +30,12 @@ function drawFace(mouthOpen) {
   ctx.fill();
 }
 
-drawFace(false); // Draw initial neutral face
+// Initial face
+drawFace(false);
 
-// Main function triggered by button
+// Speak button trigger
 async function speak() {
-  const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson."; // You can replace with GPT later
+  const text = "Hello, I am Tommy Sir's AI voice assistant. Let's begin your English lesson.";
 
   try {
     const response = await fetch("/api/speak", {
@@ -51,12 +52,10 @@ async function speak() {
     const blob = await response.blob();
     const audioURL = URL.createObjectURL(blob);
     const audio = new Audio(audioURL);
-audio.crossOrigin = "anonymous";
+    audio.crossOrigin = "anonymous";
+    audio.playbackRate = 0.85; // 🐢 Slower playback
 
-// 🔉 Slow down the speaking rate
-audio.playbackRate = 0.85;  // Default = 1.0, try 0.85 for ~15% slower
-
-    // Setup audio context and analyzer
+    // Setup analyzer
     if (!audioContext) {
       audioContext = new AudioContext();
       const source = audioContext.createMediaElementSource(audio);
@@ -69,17 +68,28 @@ audio.playbackRate = 0.85;  // Default = 1.0, try 0.85 for ~15% slower
       dataArray = new Uint8Array(bufferLength);
     }
 
-    audio.play();
+    // 🎬 Animate mouth
+    let isPlaying = true;
 
     function animate() {
+      if (!isPlaying) return;
+
       requestAnimationFrame(animate);
       analyser.getByteFrequencyData(dataArray);
       const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-      drawFace(volume > 20); // Simulate mouth movement based on volume
+
+      drawFace(volume > 20); // Mouth open when volume is high
     }
 
+    audio.play();
     animate();
+
+    // 🛑 Close mouth when audio ends
+    audio.onended = () => {
+      isPlaying = false;
+      drawFace(false);
+    };
   } catch (err) {
-    console.error("Error during speech:", err);
+    console.error("💥 Error during speech:", err);
   }
 }
