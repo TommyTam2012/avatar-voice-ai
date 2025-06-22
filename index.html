@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Avatar Voice Demo</title>
+  <title>Tommy Sir's 3D AI Avatar</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <h1>👩‍🏫 Tommy Sir's AI Avatar</h1>
+  <h1>🧑‍🏫 Tommy Sir’s 3D AI Avatar</h1>
 
-  <!-- Avatar Canvas -->
-  <canvas id="avatarCanvas" width="300" height="300"></canvas>
+  <!-- Fullscreen Canvas for 3D Avatar -->
+  <canvas id="three-canvas"></canvas>
 
   <!-- Action Button -->
-  <div style="margin-top: 20px;">
+  <div style="margin-top: 20px; text-align: center;">
     <button onclick="speak()">🔊 Speak</button>
   </div>
 
-  <!-- JS Logic -->
+  <!-- Your custom logic -->
   <script src="script.js"></script>
 </body>
 </html>
